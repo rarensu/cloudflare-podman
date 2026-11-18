@@ -1,0 +1,46 @@
+#!/bin/sh
+set -eu
+
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+APP_DIR="$HOME/.local/share/warp-zt"
+QUADLET_DIR="$HOME/.config/containers/systemd"
+BIN_DIR="$HOME/.local/bin"
+APPLICATIONS_DIR="$HOME/.local/share/applications"
+
+run_as_root() {
+    if [ "$(id -u)" -eq 0 ]; then
+        "$@"
+    else
+        sudo "$@"
+    fi
+}
+
+mkdir -p "$APP_DIR" "$QUADLET_DIR" "$BIN_DIR" "$APPLICATIONS_DIR"
+
+tmp_dir=$(mktemp -d)
+trap 'rm -rf "$tmp_dir"' 0
+trap 'exit 1' HUP INT TERM
+checkmodule -M -m -o "$tmp_dir/container-warp-tun.mod" "$SCRIPT_DIR/container-warp-tun.te"
+semodule_package -o "$tmp_dir/container-warp-tun.pp" -m "$tmp_dir/container-warp-tun.mod"
+run_as_root semodule -i "$tmp_dir/container-warp-tun.pp"
+
+podman build --network=host -t localhost/warp-zt:latest "$SCRIPT_DIR"
+
+# Replace a container created by the previous manual setup; its data lives in
+# the bind mount and named volume, not in the container itself.
+if podman container exists warp-zt-proxy; then
+    podman rm --force warp-zt-proxy
+fi
+
+install -m 0644 "$SCRIPT_DIR/warp-zt-proxy.container" "$QUADLET_DIR/warp-zt-proxy.container"
+install -m 0755 "$SCRIPT_DIR/warp-zt-taskbar.sh" "$BIN_DIR/warp-zt-taskbar"
+install -m 0644 "$SCRIPT_DIR/cloudflare-warp-taskbar.desktop" "$APPLICATIONS_DIR/"
+install -m 0644 "$SCRIPT_DIR/cloudflare-warp-registration.desktop" "$APPLICATIONS_DIR/"
+
+xdg-mime default cloudflare-warp-registration.desktop x-scheme-handler/com.cloudflare.warp
+update-desktop-database "$APPLICATIONS_DIR"
+
+systemctl --user daemon-reload
+systemctl --user start warp-zt-proxy.service
+
+printf 'Setup complete. Start the GUI with: warp-zt-taskbar\n'

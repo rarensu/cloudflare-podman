@@ -1,0 +1,13 @@
+[Unit]
+Description=Cloudflare WARP Zero Trust proxy
+
+[Container]
+Image=localhost/warp-zt:latest
+ContainerName=warp-zt-proxy
+AddCapability=NET_ADMIN
+AddDevice=/dev/net/tun
+Sysctl=net.ipv6.conf.all.disable_ipv6=0
+PublishPort=127.0.0.1:1080:1080
+PublishPort=127.0.0.1:8080:8080
+Volume=%h/.local/share/warp-zt:/var/lib/cloudflare-warp:Z
+Volume=warp-sock:/run/cloudflare-warp

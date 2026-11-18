@@ -1,0 +1,9 @@
+Terminal=false
+[Desktop Entry]
+Type=Application
+Name=Cloudflare WARP Tray
+Comment=Starts warp-taskbar (graphical monitor) in the Podman container
+Exec=warp-zt-taskbar
+Icon=cloudflare-warp
+Terminal=false
+Categories=Network;System;

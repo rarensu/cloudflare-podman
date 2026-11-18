@@ -1,0 +1,16 @@
+
+module container-warp-tun 1.0;
+
+require {
+	type tun_tap_device_t;
+	type container_t;
+	class chr_file { ioctl open read write };
+}
+
+#============= container_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow container_t tun_tap_device_t:chr_file { open read write };
+
+#!!!! This avc can be allowed using the boolean 'container_use_devices'
+allow container_t tun_tap_device_t:chr_file ioctl;
