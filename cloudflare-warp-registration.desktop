@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Cloudflare WARP (in Podman) Registration Handler
 Comment=Forwards WARP SSO callback URIs into the Podman container
-Exec=/usr/bin/podman exec warp-zt-proxy warp-cli registration token %u
+Exec=/usr/bin/podman exec warp-zt-proxy warp-cli --accept-tos registration token %u
 Type=Application
 Terminal=false
 NoDisplay=true

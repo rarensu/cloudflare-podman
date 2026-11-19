@@ -4,6 +4,7 @@ Description=Cloudflare WARP Zero Trust proxy
 [Container]
 Image=localhost/warp-zt:latest
 ContainerName=warp-zt-proxy
+Exec=warp-svc
 AddCapability=NET_ADMIN
 AddDevice=/dev/net/tun
 Sysctl=net.ipv6.conf.all.disable_ipv6=0

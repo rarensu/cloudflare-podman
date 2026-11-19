@@ -3,7 +3,9 @@ set -e
 
 cleanup() {
     sig="$1"
-    kill -s "$sig" $CHILD_PIDS 2>/dev/null || true
+    if [ -n "$CHILD_PIDS" ]; then
+        kill -s "$sig" $CHILD_PIDS 2>/dev/null || true
+    fi
     wait
     trap - "$sig"
     kill -s "$sig" "$$"
@@ -18,7 +20,7 @@ if [ "${1:-}" = "warp-taskbar" ]; then
     warp-taskbar &
     CHILD_PIDS=$!
     wait
-else
+elif [ "${1:-}" = "warp-svc" ]; then
     # Start the WARP daemon in the background
     warp-svc &
     WARP_PID=$!
@@ -45,4 +47,7 @@ else
     CHILD_PIDS="$CHILD_PIDS $SOCKS_PID"
 
     wait
+else
+    echo "Usage: $0 {warp-taskbar|warp-svc}"
+    exit 1
 fi

@@ -34,6 +34,11 @@ fi
 
 install -m 0644 "$SCRIPT_DIR/warp-zt-proxy.container" "$QUADLET_DIR/warp-zt-proxy.container"
 install -m 0755 "$SCRIPT_DIR/warp-zt-taskbar.sh" "$BIN_DIR/warp-zt-taskbar"
+
+
+# Install host-browser server and client scripts
+install -m 0755 "$SCRIPT_DIR/host-browser-server.sh" "$BIN_DIR/host-browser-server"
+install -m 0755 "$SCRIPT_DIR/host-browser-open.sh" "$BIN_DIR/host-browser-open"
 install -m 0644 "$SCRIPT_DIR/cloudflare-warp-taskbar.desktop" "$APPLICATIONS_DIR/"
 install -m 0644 "$SCRIPT_DIR/cloudflare-warp-registration.desktop" "$APPLICATIONS_DIR/"
 
