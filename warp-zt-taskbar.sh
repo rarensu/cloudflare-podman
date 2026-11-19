@@ -13,6 +13,11 @@ if [ "$(podman inspect -f '{{.State.Running}}' warp-zt-gui 2>/dev/null)" = "true
     # If the container is already running, use it (brings the existing window to the foreground)
     podman exec -d warp-zt-gui /entrypoint.sh warp-taskbar
 else
+    if ! systemctl --user is-active --quiet warp-zt-proxy.service; then
+        systemctl --user start warp-zt-proxy.service
+    fi
+    systemctl --user is-active warp-zt-proxy.service >/dev/null
+
     # Clean up any stopped/exited container remnants from a previous crashed session
     podman rm warp-zt-gui 2>/dev/null || true
 

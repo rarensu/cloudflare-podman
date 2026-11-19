@@ -6,6 +6,7 @@ APP_DIR="$HOME/.local/share/warp-zt"
 QUADLET_DIR="$HOME/.config/containers/systemd"
 BIN_DIR="$HOME/.local/bin"
 APPLICATIONS_DIR="$HOME/.local/share/applications"
+ICONS_DIR="$HOME/.local/share/icons/hicolor/512x512/apps"
 
 run_as_root() {
     if [ "$(id -u)" -eq 0 ]; then
@@ -15,7 +16,7 @@ run_as_root() {
     fi
 }
 
-mkdir -p "$APP_DIR" "$QUADLET_DIR" "$BIN_DIR" "$APPLICATIONS_DIR"
+mkdir -p "$APP_DIR" "$QUADLET_DIR" "$BIN_DIR" "$APPLICATIONS_DIR" "$ICONS_DIR"
 
 tmp_dir=$(mktemp -d)
 trap 'rm -rf "$tmp_dir"' 0
@@ -34,16 +35,15 @@ fi
 
 install -m 0644 "$SCRIPT_DIR/warp-zt-proxy.container" "$QUADLET_DIR/warp-zt-proxy.container"
 install -m 0755 "$SCRIPT_DIR/warp-zt-taskbar.sh" "$BIN_DIR/warp-zt-taskbar"
-
-
-# Install host-browser server and client scripts
 install -m 0755 "$SCRIPT_DIR/host-browser-server.sh" "$BIN_DIR/host-browser-server"
 install -m 0755 "$SCRIPT_DIR/host-browser-open.sh" "$BIN_DIR/host-browser-open"
 install -m 0644 "$SCRIPT_DIR/cloudflare-warp-taskbar.desktop" "$APPLICATIONS_DIR/"
 install -m 0644 "$SCRIPT_DIR/cloudflare-warp-registration.desktop" "$APPLICATIONS_DIR/"
+install -m 0644 "$SCRIPT_DIR/cloudflare-zero-trust-podman.png" "$ICONS_DIR/"
 
 xdg-mime default cloudflare-warp-registration.desktop x-scheme-handler/com.cloudflare.warp
 update-desktop-database "$APPLICATIONS_DIR"
+gtk-update-icon-cache -f -t "$ICONS_DIR"
 
 systemctl --user daemon-reload
 systemctl --user start warp-zt-proxy.service

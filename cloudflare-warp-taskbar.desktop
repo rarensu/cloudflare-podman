@@ -3,6 +3,6 @@ Type=Application
 Name=Cloudflare WARP Tray
 Comment=Starts warp-taskbar (graphical monitor) in the Podman container
 Exec=warp-zt-taskbar
-Icon=cloudflare-warp
+Icon=cloudflare-zero-trust-podman
 Terminal=false
 Categories=Network;System;
