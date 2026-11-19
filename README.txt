@@ -27,11 +27,13 @@ systemctl --user start warp-zt-proxy.service
 systemctl --user stop warp-zt-proxy.service
 ```
 
-Launch the GUI separately with:
+Launch the GUI using the desktop icon or execute:
 
 ```
 warp-zt-taskbar
 ```
+
+(Launching the GUI will also start the proxy if it's not already running.)
 
 ## troubleshoot
 

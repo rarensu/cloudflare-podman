@@ -1,8 +1,9 @@
 [Desktop Entry]
-Name=Cloudflare WARP (in Podman) Registration Handler
+Name=Cloudflare WARP Zero-Trust Registration Handler
 Comment=Forwards WARP SSO callback URIs into the Podman container
 Exec=/usr/bin/podman exec warp-zt-proxy warp-cli --accept-tos registration token %u
 Type=Application
+Icon=cloudflare-zero-trust-podman
 Terminal=false
 NoDisplay=true
 MimeType=x-scheme-handler/com.cloudflare.warp;
