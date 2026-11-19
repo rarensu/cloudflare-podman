@@ -7,6 +7,11 @@ QUADLET_DIR="$HOME/.config/containers/systemd"
 BIN_DIR="$HOME/.local/bin"
 APPLICATIONS_DIR="$HOME/.local/share/applications"
 ICONS_DIR="$HOME/.local/share/icons/hicolor/512x512/apps"
+# Port configuration for the container proxy services
+# These control the external published ports; internal container ports remain 8080 and 1080.
+HTTP_PROXY_PORT="8080"
+SOCKS_PROXY_PORT="1080"
+
 
 run_as_root() {
     if [ "$(id -u)" -eq 0 ]; then
@@ -15,6 +20,22 @@ run_as_root() {
         sudo "$@"
     fi
 }
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --http-proxy-port)
+            HTTP_PROXY_PORT="$2"
+            shift 2
+            ;;
+        --socks-proxy-port)
+            SOCKS_PROXY_PORT="$2"
+            shift 2
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
 
 mkdir -p "$APP_DIR" "$QUADLET_DIR" "$BIN_DIR" "$APPLICATIONS_DIR" "$ICONS_DIR"
 
@@ -33,7 +54,13 @@ if podman container exists warp-zt-proxy; then
     podman rm --force warp-zt-proxy
 fi
 
+# Install the quadlet file, then replace the external ports in PublishPort lines
+# while keeping internal container ports (1080/8080) as documented in the container.
 install -m 0644 "$SCRIPT_DIR/warp-zt-proxy.container" "$QUADLET_DIR/warp-zt-proxy.container"
+# Parameterize the external mapped ports in the quadlet.
+# Internal container ports remain: privoxy 8080, microsocks 1080
+sed -i "s|PublishPort=127.0.0.1:1080:1080|PublishPort=127.0.0.1:${SOCKS_PROXY_PORT}:1080|" "$QUADLET_DIR/warp-zt-proxy.container"
+sed -i "s|PublishPort=127.0.0.1:8080:8080|PublishPort=127.0.0.1:${HTTP_PROXY_PORT}:8080|" "$QUADLET_DIR/warp-zt-proxy.container"
 install -m 0755 "$SCRIPT_DIR/warp-zt-taskbar.sh" "$BIN_DIR/warp-zt-taskbar"
 install -m 0755 "$SCRIPT_DIR/host-browser-server.sh" "$BIN_DIR/host-browser-server"
 install -m 0755 "$SCRIPT_DIR/host-browser-open.sh" "$BIN_DIR/host-browser-open"
