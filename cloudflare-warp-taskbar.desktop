@@ -5,4 +5,5 @@ Comment=Starts warp-taskbar (graphical monitor) in the Podman container
 Exec=warp-zt-taskbar
 Icon=cloudflare-zero-trust-podman
 Terminal=false
-Categories=Network;System;
+Categories=Network;
+StartupWMClass=warp-taskbar
